@@ -1,0 +1,99 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+
+Loading r packages
+```{r}
+library(dplyr)
+```
+
+
+
+Read in R files
+```{r}
+
+#2 dots mean go one level up
+path <- "../../Data/baseballdatabank-2019.2/core/"
+
+#paste0 merges 2 strings together with no spaces
+salaries <- read.csv(paste0(path, "Salaries.csv"))
+
+head(salaries)
+
+```
+
+
+Examples of getting some column vectors
+```{r}
+players <- salaries$playerID
+head(players)
+```
+
+Make new columns from existing columns
+```{r}
+salaries$salaryTimesTwo <- salaries$salary*2
+salaries$largeSalary <- ifelse(salaries$salary > 1000000, 1,0)
+
+#or use dplyr (more on this later)
+salaries <- salaries %>% mutate(salaryTimesThree = salary * 3)
+tail(salaries)
+```
+
+Taking a subset of data
+```{r}
+#3 ways
+
+#index the dataframe
+recent_salaries <- salaries[salaries$yearID > 2010,]
+
+#use subset function
+recent_salaries2 <- subset(salaries, yearID > 2010)
+
+#use dplyr (my favorite)
+recent_salaries3 <- salaries %>% filter(yearID > 2010)
+```
+
+
+Practice Questions and Solutions
+```{r}
+#Read in the batting dataset that was included in the Lahman Database
+batting <- read.csv(paste0(path, "Batting.csv"))
+
+
+
+#Assign to a new dataframe called "recent_batting" the one you just read in, and only include where the year is greater than 2012
+recent_batting <- subset(batting, yearID > 2012)
+
+#Get rid of anyone who has less than 300 AB
+recent_batting <- recent_batting %>% filter(AB >= 300)
+
+
+
+
+#Add a column to this dataframe called "plays_alot", which is 1 if the player has more than 150 games (G), and 0 otherwise
+recent_batting$plays_alot <- ifelse(recent_batting$G > 150, 1, 0)
+
+
+
+#Make a new column called "Batting_Average" which calculates the batting average (formula = H/AB)
+recent_batting$Batting_Average <- recent_batting$H/recent_batting$AB
+
+
+
+#Make a column called "Net_Stolen_Bases" which is the number of stolen bases - caught stealing (SB - CS)
+recent_batting <- recent_batting %>% mutate(Net_Stolen_Bases = SB - CS)
+```
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
